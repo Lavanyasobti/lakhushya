@@ -1,0 +1,733 @@
+import { useState } from "react";
+
+export default function DonorDashboard() {
+  const [activeTab, setActiveTab] = useState("overview");
+
+  return (
+    <div className="min-h-screen bg-[#FBF7F2]">
+
+      {/* ===== NAVBAR ===== */}
+      <div className="bg-white px-10 py-4 flex justify-between items-center shadow-sm">
+        <h1 className="flex flex-wrap items-center gap-4 text-sm">💚 Lakhushiya</h1>
+
+        <div className="flex items-center gap-6 text-sm">
+          <span className="cursor-pointer">Home</span>
+          <span className="cursor-pointer">Dashboard</span>
+          <span className="text-gray-500 hidden sm:inline">Welcome, Donor</span>
+          <button className="border px-4 py-1 rounded-lg hover:bg-gray-100">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* ===== PAGE HEADER ===== */}
+      <div className="px-10 py-8">
+        <h2 className="text-2xl font-bold text-green-900">
+          Welcome back!
+        </h2>
+        <p className="text-gray-600 mt-1">
+          Manage your donations and see your impact
+        </p>
+      </div>
+
+      {/* ===== TABS ===== */}
+      <div className="px-10">
+        <div className="bg-[#F2EEE6] rounded-xl p-1 flex gap-2 text-sm w-full overflow-x-auto md:overflow-visible no-scrollbar">
+          {[
+            "overview",
+            "create donation",
+            "track donations",
+            "events",
+            "analytics",
+            "certificates",
+          ].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 rounded-lg capitalize transition text-center whitespace-nowrap md:flex-1  ${
+                activeTab === tab
+                  ? "bg-white text-green-700 font-semibold shadow"
+                  : "text-gray-600 hover:bg-white"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ===== OVERVIEW TAB ===== */}
+      {activeTab === "overview" && (
+        <div className="px-10 py-8">
+
+          {/* ===== STAT CARDS ===== */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <div className="bg-white p-6 rounded-xl shadow-sm flex justify-between items-center">
+              <div>
+                <p className="text-gray-500 text-sm">Total Donations</p>
+                <h3 className="text-3xl font-bold text-green-600 mt-2">24</h3>
+              </div>
+              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-2xl">
+                🎁
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-sm flex justify-between items-center">
+              <div>
+                <p className="text-gray-500 text-sm">People Helped</p>
+                <h3 className="text-3xl font-bold text-green-600 mt-2">320</h3>
+              </div>
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-2xl">
+                ❤️
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-sm flex justify-between items-center">
+              <div>
+                <p className="text-gray-500 text-sm">Active Donations</p>
+                <h3 className="text-3xl font-bold text-green-600 mt-2">5</h3>
+              </div>
+              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-2xl">
+                🚚
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-sm flex justify-between items-center">
+              <div>
+                <p className="text-gray-500 text-sm">Impact Score</p>
+                <h3 className="text-3xl font-bold text-green-600 mt-2">92%</h3>
+              </div>
+              <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center text-2xl">
+                ⭐
+              </div>
+            </div>
+
+          </div>
+
+          {/* ===== RECENT DONATIONS & UPCOMING EVENTS ===== */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
+
+            {/* RECENT DONATIONS */}
+            <div className="bg-white rounded-xl p-6 border border-gray-100">
+              <h3 className="text-base font-semibold text-gray-800 mb-4">
+                Recent Donations
+              </h3>
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center bg-[#F9F7F3] px-4 py-3 rounded-lg">
+                  <div>
+                    <p className="font-medium text-sm">Fresh vegetables and fruits</p>
+                    <p className="text-xs text-gray-500">
+                      Hope Foundation · 2024-01-15
+                    </p>
+                  </div>
+                  <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                    Delivered
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center bg-[#F9F7F3] px-4 py-3 rounded-lg">
+                  <div>
+                    <p className="font-medium text-sm">Winter clothing collection</p>
+                    <p className="text-xs text-gray-500">
+                      Care Trust · 2024-01-18
+                    </p>
+                  </div>
+                  <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
+                    In Transit
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center bg-[#F9F7F3] px-4 py-3 rounded-lg">
+                  <div>
+                    <p className="font-medium text-sm">Educational textbooks</p>
+                    <p className="text-xs text-gray-500">
+                      Learning Circle · 2024-01-20
+                    </p>
+                  </div>
+                  <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                    Picked Up
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* UPCOMING EVENTS */}
+            <div className="bg-white rounded-xl p-6 border border-gray-100">
+              <h3 className="text-base font-semibold text-gray-800 mb-4">
+                Upcoming Events
+              </h3>
+
+              <div className="space-y-3">
+                <div className="bg-[#F9F7F3] p-4 rounded-lg flex justify-between items-start">
+                  <div>
+                    <p className="font-medium text-sm">Community Food Drive</p>
+                    <p className="text-xs text-gray-500 mt-1">📅 2024-02-15</p>
+                    <p className="text-xs text-gray-500">📍 Central Park</p>
+                  </div>
+                  <button className="text-xs bg-green-500 text-white px-4 py-1.5 rounded-lg hover:bg-green-600 transition">
+                    Register
+                  </button>
+                </div>
+
+                <div className="bg-[#F9F7F3] p-4 rounded-lg flex justify-between items-start">
+                  <div>
+                    <p className="font-medium text-sm">Winter Clothing Distribution</p>
+                    <p className="text-xs text-gray-500 mt-1">📅 2024-02-20</p>
+                    <p className="text-xs text-gray-500">📍 City Center</p>
+                  </div>
+                  <button className="text-xs bg-green-500 text-white px-4 py-1.5 rounded-lg hover:bg-green-600 transition">
+                    Register
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      )}
+        {activeTab === "create donation" && (
+  <div className="px-10 py-8 flex justify-center">
+
+    <div className="bg-white rounded-xl p-8 border border-gray-100 max-w-3xl w-full">
+
+      <h3 className="text-xl font-semibold text-green-900 mb-2">
+        Create a Donation
+      </h3>
+      <p className="text-gray-600 mb-6">
+        Fill in the details below to schedule a donation pickup.
+      </p>
+
+      {/* FORM */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* Donation Type */}
+        <div>
+          <label className="text-sm text-gray-600">Donation Type</label>
+          <select className="w-full mt-1 p-3 border rounded-lg focus:outline-green-500">
+            <option>Food</option>
+            <option>Clothes</option>
+            <option>Books</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        {/* Quantity */}
+        <div>
+          <label className="text-sm text-gray-600">Quantity</label>
+          <input
+            type="text"
+            placeholder="e.g. 10 packets"
+            className="w-full mt-1 p-3 border rounded-lg focus:outline-green-500"
+          />
+        </div>
+
+        {/* Item Description */}
+        <div className="md:col-span-2">
+          <label className="text-sm text-gray-600">Item Description</label>
+          <textarea
+            rows="3"
+            placeholder="Describe the items you are donating"
+            className="w-full mt-1 p-3 border rounded-lg focus:outline-green-500"
+          />
+        </div>
+
+        {/* Pickup Date */}
+        <div>
+          <label className="text-sm text-gray-600">Pickup Date</label>
+          <input
+            type="date"
+            className="w-full mt-1 p-3 border rounded-lg focus:outline-green-500"
+          />
+        </div>
+
+        {/* Pickup Time */}
+        <div>
+          <label className="text-sm text-gray-600">Pickup Time</label>
+          <input
+            type="time"
+            className="w-full mt-1 p-3 border rounded-lg focus:outline-green-500"
+          />
+        </div>
+
+        {/* Address */}
+        <div className="md:col-span-2">
+          <label className="text-sm text-gray-600">Pickup Address</label>
+          <textarea
+            rows="2"
+            placeholder="Enter full pickup address"
+            className="w-full mt-1 p-3 border rounded-lg focus:outline-green-500"
+          />
+        </div>
+
+      </div>
+
+      {/* SUBMIT BUTTON */}
+      <div className="mt-6">
+        <button className="bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition">
+          Submit Donation
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+)}
+{activeTab === "track donations" && (
+  <div className="px-10 py-8">
+
+    <div className="bg-white rounded-xl p-6 border border-gray-100">
+
+      <h3 className="text-xl font-semibold text-green-900 mb-1">
+        Track Donations
+      </h3>
+      <p className="text-gray-600 mb-6">
+        Monitor your donation status and take action
+      </p>
+
+      <div className="space-y-4">
+
+        {/* CARD 1 */}
+        <div className="bg-[#F9F7F3] p-5 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+          {/* LEFT INFO */}
+          <div>
+            <p className="font-medium text-sm">
+              Food Packets
+            </p>
+            <p className="text-xs text-gray-500">
+              NGO: Smile Foundation
+            </p>
+            <p className="text-xs text-gray-500">
+              Date: 2024-01-15
+            </p>
+          </div>
+
+          {/* RIGHT ACTIONS */}
+          <div className="flex flex-wrap items-center gap-3">
+
+            <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+              Delivered
+            </span>
+
+            <span className="text-sm text-gray-600">
+              Qty: 20
+            </span>
+
+            <button className="text-xs border border-green-500 text-green-600 px-3 py-1.5 rounded-lg hover:bg-green-50 transition">
+              Track Live
+            </button>
+
+            <button className="text-xs bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition">
+              Contact NGO
+            </button>
+
+          </div>
+        </div>
+
+        {/* CARD 2 */}
+        <div className="bg-[#F9F7F3] p-5 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+          <div>
+            <p className="font-medium text-sm">
+              Winter Clothes
+            </p>
+            <p className="text-xs text-gray-500">
+              NGO: Care Trust
+            </p>
+            <p className="text-xs text-gray-500">
+              Date: 2024-01-18
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+
+            <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
+              In Transit
+            </span>
+
+            <span className="text-sm text-gray-600">
+              Qty: 15
+            </span>
+
+            <button className="text-xs border border-green-500 text-green-600 px-3 py-1.5 rounded-lg hover:bg-green-50 transition">
+              Track Live
+            </button>
+
+            <button className="text-xs bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition">
+              Contact NGO
+            </button>
+
+          </div>
+        </div>
+        {/* CARD 3 */}
+<div className="bg-[#F9F7F3] p-5 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+  {/* LEFT INFO */}
+  <div>
+    <p className="font-medium text-sm">
+      Educational Books
+    </p>
+    <p className="text-xs text-gray-500">
+      NGO: Learning Circle
+    </p>
+    <p className="text-xs text-gray-500">
+      Date: 2024-01-20
+    </p>
+  </div>
+
+  {/* RIGHT ACTIONS */}
+  <div className="flex flex-wrap items-center gap-3">
+
+    <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+      Picked Up
+    </span>
+
+    <span className="text-sm text-gray-600">
+      Qty: 30
+    </span>
+
+    <button className="text-xs border border-green-500 text-green-600 px-3 py-1.5 rounded-lg hover:bg-green-50 transition">
+      Track Live
+    </button>
+
+    <button className="text-xs bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition">
+      Contact NGO
+    </button>
+
+  </div>
+</div>
+
+      </div>
+
+    </div>
+
+  </div>
+)}
+{activeTab === "events" && (
+  <div className="px-10 py-8">
+
+    <h3 className="text-xl font-semibold text-green-900 mb-1">
+      Events
+    </h3>
+    <p className="text-gray-600 mb-6">
+      Participate in upcoming community initiatives
+    </p>
+
+    <div className="space-y-6">
+
+      {/* EVENT 1 */}
+      <div className="flex gap-6 items-start bg-white p-6 rounded-xl border border-gray-100">
+
+        {/* DATE BOX */}
+        <div className="min-w-[70px] text-center bg-[#F9F7F3] rounded-lg p-2">
+          <p className="text-lg font-bold text-green-700">15</p>
+          <p className="text-xs text-gray-500">FEB</p>
+        </div>
+
+        {/* EVENT DETAILS */}
+        <div className="flex-1">
+          <p className="font-medium text-sm">
+            Community Food Drive
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            📍 Central Park, Delhi
+          </p>
+          <p className="text-sm text-gray-600 mt-2">
+            Join us in distributing meals to underprivileged communities.
+          </p>
+        </div>
+
+        {/* ACTION */}
+        <div className="self-center flex gap-3">
+
+  <button className="border border-green-500 text-green-600 px-4 py-2 rounded-lg text-sm hover:bg-green-50 transition">
+    Details
+  </button>
+
+  <button className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition">
+    Register
+  </button>
+
+</div>
+
+
+      </div>
+
+      {/* EVENT 2 */}
+      <div className="flex gap-6 items-start bg-white p-6 rounded-xl border border-gray-100">
+
+        <div className="min-w-[70px] text-center bg-[#F9F7F3] rounded-lg p-2">
+          <p className="text-lg font-bold text-green-700">20</p>
+          <p className="text-xs text-gray-500">FEB</p>
+        </div>
+
+        <div className="flex-1">
+          <p className="font-medium text-sm">
+            Winter Clothing Distribution
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            📍 City Center, Jaipur
+          </p>
+          <p className="text-sm text-gray-600 mt-2">
+            Help distribute warm clothes to families in need.
+          </p>
+        </div>
+
+        <div className="self-center flex gap-3">
+
+  <button className="border border-green-500 text-green-600 px-4 py-2 rounded-lg text-sm hover:bg-green-50 transition">
+    Details
+  </button>
+
+  <button className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition">
+    Register
+  </button>
+
+</div>
+
+
+      </div>
+
+      {/* EVENT 3 */}
+      <div className="flex gap-6 items-start bg-white p-6 rounded-xl border border-gray-100">
+
+        <div className="min-w-[70px] text-center bg-[#F9F7F3] rounded-lg p-2">
+          <p className="text-lg font-bold text-green-700">28</p>
+          <p className="text-xs text-gray-500">FEB</p>
+        </div>
+
+        <div className="flex-1">
+          <p className="font-medium text-sm">
+            Education Support Camp
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            📍 Community Hall, Lucknow
+          </p>
+          <p className="text-sm text-gray-600 mt-2">
+            Support children with books, stationery, and mentoring.
+          </p>
+        </div>
+
+       <div className="self-center flex gap-3">
+
+  <button className="border border-green-500 text-green-600 px-4 py-2 rounded-lg text-sm hover:bg-green-50 transition">
+    Details
+  </button>
+
+  <button className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition">
+    Register
+  </button>
+
+</div>
+
+
+      </div>
+
+    </div>
+
+  </div>
+)}
+{activeTab === "analytics" && (
+  <div className="px-10 py-8">
+
+    <h3 className="text-xl font-semibold text-green-900 mb-1">
+      Analytics
+    </h3>
+    <p className="text-gray-600 mb-6">
+      Overview of your donation impact and activity
+    </p>
+
+    <div className="space-y-6">
+
+      {/* ===== TOP METRICS ===== */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div className="bg-white p-6 rounded-xl border border-gray-100">
+          <p className="text-sm text-gray-500">Total Donations</p>
+          <h3 className="text-2xl font-bold text-green-600 mt-2">
+            24
+          </h3>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl border border-gray-100">
+          <p className="text-sm text-gray-500">Completed Donations</p>
+          <h3 className="text-2xl font-bold text-green-600 mt-2">
+            19
+          </h3>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl border border-gray-100">
+          <p className="text-sm text-gray-500">People Helped</p>
+          <h3 className="text-2xl font-bold text-green-600 mt-2">
+            320
+          </h3>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl border border-gray-100">
+          <p className="text-sm text-gray-500">NGOs Supported</p>
+          <h3 className="text-2xl font-bold text-green-600 mt-2">
+            8
+          </h3>
+        </div>
+
+      </div>
+
+      {/* ===== COMPLETION RATE ===== */}
+      <div className="bg-white p-6 rounded-xl border border-gray-100">
+        <p className="text-sm text-gray-600 mb-2">
+          Donation Completion Rate
+        </p>
+
+        <div className="w-full bg-gray-200 rounded-full h-3">
+          <div
+            className="bg-green-500 h-3 rounded-full"
+            style={{ width: "80%" }}
+          ></div>
+        </div>
+
+        <p className="text-xs text-gray-500 mt-2">
+          80% of your donations have been successfully delivered
+        </p>
+      </div>
+
+      {/* ===== MONTHLY CONTRIBUTION ===== */}
+      <div className="bg-white p-6 rounded-xl border border-gray-100">
+        <p className="text-sm text-gray-600 mb-2">
+          Monthly Contribution (January)
+        </p>
+
+        <div className="w-full bg-gray-200 rounded-full h-3">
+          <div
+            className="bg-green-500 h-3 rounded-full"
+            style={{ width: "65%" }}
+          ></div>
+        </div>
+
+        <p className="text-xs text-gray-500 mt-2">
+          13 out of 20 donations completed this month
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+)}
+{activeTab === "certificates" && (
+  <div className="px-10 py-8">
+
+    <h3 className="text-xl font-semibold text-green-900 mb-1">
+      Certificates
+    </h3>
+    <p className="text-gray-600 mb-6">
+      View and download your contribution certificates
+    </p>
+
+    <div className="space-y-4">
+
+      {/* CERTIFICATE 1 */}
+      <div className="bg-[#F9F7F3] p-5 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+        {/* LEFT INFO */}
+        <div>
+          <p className="font-medium text-sm">
+            Food Donation Appreciation Certificate
+          </p>
+          <p className="text-xs text-gray-500">
+            Issued on: 15 Jan 2024
+          </p>
+        </div>
+
+        {/* RIGHT ACTIONS */}
+        <div className="flex items-center gap-3">
+
+          <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+            Available
+          </span>
+
+          <button className="text-xs border border-green-500 text-green-600 px-4 py-1.5 rounded-lg hover:bg-green-50 transition">
+            View
+          </button>
+
+          <button className="text-xs bg-green-500 text-white px-4 py-1.5 rounded-lg hover:bg-green-600 transition">
+            Download
+          </button>
+
+        </div>
+      </div>
+
+      {/* CERTIFICATE 2 */}
+      <div className="bg-[#F9F7F3] p-5 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+        <div>
+          <p className="font-medium text-sm">
+            Winter Clothing Drive Certificate
+          </p>
+          <p className="text-xs text-gray-500">
+            Issued on: 20 Jan 2024
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+
+          <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+            Available
+          </span>
+
+          <button className="text-xs border border-green-500 text-green-600 px-4 py-1.5 rounded-lg hover:bg-green-50 transition">
+            View
+          </button>
+
+          <button className="text-xs bg-green-500 text-white px-4 py-1.5 rounded-lg hover:bg-green-600 transition">
+            Download
+          </button>
+
+        </div>
+      </div>
+
+      {/* CERTIFICATE 3 */}
+      <div className="bg-[#F9F7F3] p-5 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+        <div>
+          <p className="font-medium text-sm">
+            Education Support Program Certificate
+          </p>
+          <p className="text-xs text-gray-500">
+            Issued on: 25 Jan 2024
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+
+          <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
+            Pending
+          </span>
+
+          <button
+            disabled
+            className="text-xs border border-gray-300 text-gray-400 px-4 py-1.5 rounded-lg cursor-not-allowed"
+          >
+            View
+          </button>
+
+          <button
+            disabled
+            className="text-xs bg-gray-300 text-gray-500 px-4 py-1.5 rounded-lg cursor-not-allowed"
+          >
+            Download
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+)}
+
+
+    </div>
+  );
+}
