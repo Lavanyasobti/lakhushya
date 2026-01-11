@@ -1,7 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function DonorDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [donations, setDonations] = useState([]);
+  const donorId = localStorage.getItem("userId");
+  useEffect(() => {
+  fetch(`http://localhost:5000/donation/${donorId}`)
+    .then((res) => res.json())
+    .then((data) => {
+      setDonations(data);
+    });
+}, [donorId]);
+
+  const [category, setCategory] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [itemName, setItemName] = useState("");
+  const [pickupDate, setPickupDate] = useState("");
+  const [pickupTime, setPickupTime] = useState("");
+  const [address, setAddress] = useState("");
+
 
   return (
     <div className="min-h-screen bg-[#FBF7F2]">
@@ -204,208 +221,136 @@ export default function DonorDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         {/* Donation Type */}
-        <div>
-          <label className="text-sm text-gray-600">Donation Type</label>
-          <select className="w-full mt-1 p-3 border rounded-lg focus:outline-green-500">
-            <option>Food</option>
-            <option>Clothes</option>
-            <option>Books</option>
-            <option>Other</option>
-          </select>
-        </div>
+       <select
+  className="w-full mt-1 p-3 border rounded-lg"
+  value={category}
+  onChange={(e) => setCategory(e.target.value)}
+>
+  <option value="">Select Donation Type</option>
+  <option value="Food">Food</option>
+  <option value="Clothes">Clothes</option>
+  <option value="Books">Books</option>
+  <option value="Other">Other</option>
+</select>
+
 
         {/* Quantity */}
-        <div>
-          <label className="text-sm text-gray-600">Quantity</label>
-          <input
-            type="text"
-            placeholder="e.g. 10 packets"
-            className="w-full mt-1 p-3 border rounded-lg focus:outline-green-500"
-          />
-        </div>
+        <input
+  type="number"
+  className="w-full mt-1 p-3 border rounded-lg"
+  placeholder="Enter Quantity"
+  value={quantity}
+  onChange={(e) => setQuantity(e.target.value)}
+/>
+
 
         {/* Item Description */}
-        <div className="md:col-span-2">
-          <label className="text-sm text-gray-600">Item Description</label>
-          <textarea
-            rows="3"
-            placeholder="Describe the items you are donating"
-            className="w-full mt-1 p-3 border rounded-lg focus:outline-green-500"
-          />
-        </div>
+        <textarea
+  rows="3"
+  className="w-full mt-1 p-3 border rounded-lg"
+  placeholder="Describe the donation items"
+  value={itemName}
+  onChange={(e) => setItemName(e.target.value)}
+/>
+
 
         {/* Pickup Date */}
         <div>
           <label className="text-sm text-gray-600">Pickup Date</label>
           <input
-            type="date"
-            className="w-full mt-1 p-3 border rounded-lg focus:outline-green-500"
-          />
+  type="date"
+  className="w-full mt-1 p-3 border rounded-lg"
+  value={pickupDate}
+  onChange={(e) => setPickupDate(e.target.value)}
+/>
+
         </div>
 
         {/* Pickup Time */}
         <div>
           <label className="text-sm text-gray-600">Pickup Time</label>
           <input
-            type="time"
-            className="w-full mt-1 p-3 border rounded-lg focus:outline-green-500"
-          />
+  type="time"
+  className="w-full mt-1 p-3 border rounded-lg"
+  value={pickupTime}
+  onChange={(e) => setPickupTime(e.target.value)}
+/>
+
         </div>
 
         {/* Address */}
         <div className="md:col-span-2">
           <label className="text-sm text-gray-600">Pickup Address</label>
           <textarea
-            rows="2"
-            placeholder="Enter full pickup address"
-            className="w-full mt-1 p-3 border rounded-lg focus:outline-green-500"
-          />
+  rows="2"
+  className="w-full mt-1 p-3 border rounded-lg"
+  value={address}
+  onChange={(e) => setAddress(e.target.value)}
+/>
+
         </div>
 
       </div>
 
       {/* SUBMIT BUTTON */}
       <div className="mt-6">
-        <button className="bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition">
-          Submit Donation
-        </button>
+        <button
+  className="bg-green-500 text-white px-6 py-3 rounded-lg"
+  onClick={() => {
+    fetch("http://localhost:5000/donation/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        donorId,
+        itemName,
+        category,
+        quantity,
+        pickupDate,
+        pickupTime,
+        address
+      })
+    })
+      .then((res) => res.text())
+      .then((msg) => {
+        alert(msg);
+        setItemName("");
+        setCategory("");
+        setQuantity("");
+      });
+  }}
+>
+  Submit Donation
+</button>
+
       </div>
 
     </div>
 
   </div>
 )}
-{activeTab === "track donations" && (
-  <div className="px-10 py-8">
+{donations.length === 0 && (
+  <p className="text-gray-500 text-sm">No donations found</p>
+)}
 
-    <div className="bg-white rounded-xl p-6 border border-gray-100">
-
-      <h3 className="text-xl font-semibold text-green-900 mb-1">
-        Track Donations
-      </h3>
-      <p className="text-gray-600 mb-6">
-        Monitor your donation status and take action
+{donations.map((donation) => (
+  <div
+    key={donation._id}
+    className="bg-[#F9F7F3] p-5 rounded-lg flex justify-between items-center mb-4"
+  >
+    <div>
+      <p className="font-medium text-sm">{donation.itemName}</p>
+      <p className="text-xs text-gray-500">
+        Category: {donation.category} | Quantity: {donation.quantity}
       </p>
-
-      <div className="space-y-4">
-
-        {/* CARD 1 */}
-        <div className="bg-[#F9F7F3] p-5 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-          {/* LEFT INFO */}
-          <div>
-            <p className="font-medium text-sm">
-              Food Packets
-            </p>
-            <p className="text-xs text-gray-500">
-              NGO: Smile Foundation
-            </p>
-            <p className="text-xs text-gray-500">
-              Date: 2024-01-15
-            </p>
-          </div>
-
-          {/* RIGHT ACTIONS */}
-          <div className="flex flex-wrap items-center gap-3">
-
-            <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
-              Delivered
-            </span>
-
-            <span className="text-sm text-gray-600">
-              Qty: 20
-            </span>
-
-            <button className="text-xs border border-green-500 text-green-600 px-3 py-1.5 rounded-lg hover:bg-green-50 transition">
-              Track Live
-            </button>
-
-            <button className="text-xs bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition">
-              Contact NGO
-            </button>
-
-          </div>
-        </div>
-
-        {/* CARD 2 */}
-        <div className="bg-[#F9F7F3] p-5 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-          <div>
-            <p className="font-medium text-sm">
-              Winter Clothes
-            </p>
-            <p className="text-xs text-gray-500">
-              NGO: Care Trust
-            </p>
-            <p className="text-xs text-gray-500">
-              Date: 2024-01-18
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-
-            <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
-              In Transit
-            </span>
-
-            <span className="text-sm text-gray-600">
-              Qty: 15
-            </span>
-
-            <button className="text-xs border border-green-500 text-green-600 px-3 py-1.5 rounded-lg hover:bg-green-50 transition">
-              Track Live
-            </button>
-
-            <button className="text-xs bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition">
-              Contact NGO
-            </button>
-
-          </div>
-        </div>
-        {/* CARD 3 */}
-<div className="bg-[#F9F7F3] p-5 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-  {/* LEFT INFO */}
-  <div>
-    <p className="font-medium text-sm">
-      Educational Books
-    </p>
-    <p className="text-xs text-gray-500">
-      NGO: Learning Circle
-    </p>
-    <p className="text-xs text-gray-500">
-      Date: 2024-01-20
-    </p>
-  </div>
-
-  {/* RIGHT ACTIONS */}
-  <div className="flex flex-wrap items-center gap-3">
-
-    <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-      Picked Up
-    </span>
-
-    <span className="text-sm text-gray-600">
-      Qty: 30
-    </span>
-
-    <button className="text-xs border border-green-500 text-green-600 px-3 py-1.5 rounded-lg hover:bg-green-50 transition">
-      Track Live
-    </button>
-
-    <button className="text-xs bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition">
-      Contact NGO
-    </button>
-
-  </div>
-</div>
-
-      </div>
-
     </div>
 
+    <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+      {donation.status}
+    </span>
   </div>
-)}
+))}
 {activeTab === "events" && (
   <div className="px-10 py-8">
 

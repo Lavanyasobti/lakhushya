@@ -1,7 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export default function Register() {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [role, setRole] = useState("");
 
   return (
     <div className="min-h-screen bg-[#FBF7F2] flex items-center justify-center">
@@ -20,19 +25,27 @@ export default function Register() {
 
         {/* Full Name */}
         <input
-          className="w-full border p-3 rounded-lg mt-6 focus:outline-green-500"
+          className="w-full border p-3 rounded-lg mt-6"
           placeholder="Full Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
+
 
         {/* Email */}
         <input
-          className="w-full border p-3 rounded-lg mt-4 focus:outline-green-500"
+          className="w-full border p-3 rounded-lg mt-4"
           placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
+
 
         {/* Role */}
         <select
           className="w-full border p-3 rounded-lg mt-4 focus:outline-green-500"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
         >
           <option value="">Select Role</option>
           <option>Admin</option>
@@ -44,9 +57,12 @@ export default function Register() {
         {/* Password */}
         <input
           type="password"
-          className="w-full border p-3 rounded-lg mt-4 focus:outline-green-500"
+          className="w-full border p-3 rounded-lg mt-4"
           placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
+
 
         {/* Confirm Password */}
         <input
@@ -56,9 +72,29 @@ export default function Register() {
         />
 
         {/* Register Button */}
-        <button className="w-full bg-green-500 text-white py-3 rounded-lg mt-6 font-semibold hover:bg-green-600 transition">
-          Register
-        </button>
+        <button
+  className="w-full bg-green-500 text-white py-3 rounded-lg mt-6 font-semibold"
+  onClick={() => {
+    fetch("http://localhost:5000/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        role
+      })
+    })
+      .then(res => res.text())
+      .then(data => {
+        alert(data);
+        navigate("/login");
+      });
+  }}
+>
+  Register
+</button>
+
 
         {/* Login Redirect */}
         <p
