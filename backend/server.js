@@ -14,6 +14,9 @@ mongoose.connect("mongodb://127.0.0.1:27017/lakhushya_db")
 
 app.post("/register", async (req, res) => {
   const { name, email, password, role } = req.body;
+  if (role === "Admin") {
+  return res.status(403).send("Admin registration not allowed");
+  }
 
   // check if user already exists
   const existingUser = await User.findOne({ email });
@@ -101,7 +104,33 @@ app.get("/donation/:donorId", async (req, res) => {
 
   res.json(donations);
 });
+// NGO: SEE ALL DONATIONS REQUESTED BY NGO
+app.get("/ngo/donations/:ngoId", async (req, res) => {
+  try {
+    const donations = await Donation.find({
+      ngoId: req.params.ngoId
+    });
 
+    res.json(donations);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+// ADMIN: GET ALL USERS
+app.get("/admin/users", async (req, res) => {
+  const users = await User.find();
+  res.json(users);
+});
+
+// ADMIN: GET ALL DONATIONS
+app.get("/admin/donations", async (req, res) => {
+  const donations = await Donation.find()
+    .populate("donorId", "name")
+    .populate("ngoId", "name")
+    .populate("volunteerId", "name");
+
+  res.json(donations);
+});
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });

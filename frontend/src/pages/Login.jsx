@@ -62,7 +62,11 @@ export default function Login() {
         navigate("/donor-dashboard");
       } else if (data.role.toLowerCase() === "volunteer") {
         navigate("/volunteer-dashboard");
-      } else {
+      }  else if (data.role === "NGO") {
+        navigate("/ngo-dashboard");
+      } else if (data.role === "Admin") {
+        navigate("/admin-dashboard");
+      }else {
         alert("Unknown role");
       }
     })

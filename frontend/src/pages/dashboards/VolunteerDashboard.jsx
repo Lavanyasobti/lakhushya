@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 export default function VolunteerDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [pickups, setPickups] = useState([]);
 
   // TEMP – replace later with logged-in volunteer ID
   const volunteerId = localStorage.getItem("userId");
-
+  const navigate = useNavigate();
+  
+    const handleLogout = () => {
+      localStorage.removeItem("userId");
+      localStorage.removeItem("role");
+      navigate("/login");
+    };
 
   useEffect(() => {
     fetchPickups();
@@ -57,7 +63,7 @@ export default function VolunteerDashboard() {
           <span className="text-gray-500 hidden sm:inline">
             Welcome, Volunteer
           </span>
-          <button className="border px-4 py-1 rounded-lg hover:bg-gray-100">
+          <button onClick={handleLogout}>
             Logout
           </button>
         </div>
