@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function DonorDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [donations, setDonations] = useState([]);
   const donorId = localStorage.getItem("userId");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("role");
+    navigate("/login");
+  };
+
   useEffect(() => {
   fetch(`http://localhost:5000/donation/${donorId}`)
     .then((res) => res.json())
@@ -31,9 +40,9 @@ export default function DonorDashboard() {
           <span className="cursor-pointer">Home</span>
           <span className="cursor-pointer">Dashboard</span>
           <span className="text-gray-500 hidden sm:inline">Welcome, Donor</span>
-          <button className="border px-4 py-1 rounded-lg hover:bg-gray-100">
+          <button onClick={handleLogout}>
             Logout
-          </button>
+          </button>   
         </div>
       </div>
 

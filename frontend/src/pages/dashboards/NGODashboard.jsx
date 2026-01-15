@@ -1,7 +1,27 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 export default function NgoDashboard() {
-  const [activeTab, setActiveTab] = useState("overview");
+    const [activeTab, setActiveTab] = useState("overview");
+    const [donations, setDonations] = useState([]);
+    const ngoId = localStorage.getItem("userId");
+    const navigate = useNavigate();
+    
+    const handleLogout = () => {
+        localStorage.removeItem("userId");
+        localStorage.removeItem("role");
+        navigate("/login");
+    };
+    useEffect(() => {
+        fetch(`http://localhost:5000/ngo/donations/${ngoId}`)
+            .then(res => res.json())
+            .then(data => setDonations(data));
+    }, [ngoId]);
+    useEffect(() => {
+        fetch(`http://localhost:5000/ngo/donations/${ngoId}`)
+            .then(res => res.json())
+            .then(data => setDonations(data))
+            .catch(err => console.log(err));
+    }, [ngoId]);
 
   return (
     <div className="min-h-screen bg-[#FBF7F2]">
@@ -16,7 +36,7 @@ export default function NgoDashboard() {
           <span className="text-gray-500 hidden sm:inline">
             Welcome, NGO
           </span>
-          <button className="border px-4 py-1 rounded-lg hover:bg-gray-100">
+          <button onClick={handleLogout}>
             Logout
           </button>
         </div>

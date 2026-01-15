@@ -1,8 +1,26 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [users, setUsers] = useState([]);   
+  const [donations, setDonations] = useState([]);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("role");
+    navigate("/login");
+  };
+  useEffect(() => {
+  fetch("http://localhost:5000/admin/users")
+    .then(res => res.json())
+    .then(data => setUsers(data));
+
+  fetch("http://localhost:5000/admin/donations")
+    .then(res => res.json())
+    .then(data => setDonations(data));
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#FBF7F2]">
@@ -17,7 +35,7 @@ export default function AdminDashboard() {
           <span className="cursor-pointer">Home</span>
           <span className="cursor-pointer">Dashboard</span>
           <span className="text-gray-500 hidden sm:inline">Welcome, admin</span>
-          <button className="border px-4 py-1 rounded-lg hover:bg-gray-100">
+          <button onClick={handleLogout}>
             Logout
           </button>
         </div>
