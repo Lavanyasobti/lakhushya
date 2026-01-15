@@ -1,15 +1,56 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function VolunteerDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [pickups, setPickups] = useState([]);
+
+  // TEMP – replace later with logged-in volunteer ID
+  const volunteerId = localStorage.getItem("userId");
+
+
+  useEffect(() => {
+    fetchPickups();
+  }, []);
+
+  const fetchPickups = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/volunteer/pickups${volunteerId}");
+      setPickups(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const acceptPickup = async (id) => {
+    try {
+      await axios.post(
+        `http://localhost:5000/volunteer/accept/${id}`,
+        { volunteerId }
+      );
+      fetchPickups();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const declinePickup = async (id) => {
+    try {
+      await axios.post(
+        `http://localhost:5000/volunteer/decline/${id}`
+      );
+      fetchPickups();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#FBF7F2]">
 
-      {/* ===== NAVBAR ===== */}
+      {/* NAVBAR */}
       <div className="bg-white px-10 py-4 flex justify-between items-center shadow-sm">
         <h1 className="text-sm font-semibold">💚 Lakhushiya</h1>
-
         <div className="flex items-center gap-6 text-sm">
           <span className="cursor-pointer">Home</span>
           <span className="cursor-pointer">Dashboard</span>
@@ -22,7 +63,7 @@ export default function VolunteerDashboard() {
         </div>
       </div>
 
-      {/* ===== HEADER ===== */}
+      {/* HEADER */}
       <div className="px-10 py-8">
         <h2 className="text-2xl font-bold text-green-900">
           Volunteer Dashboard
@@ -32,16 +73,9 @@ export default function VolunteerDashboard() {
         </p>
       </div>
 
-      {/* ===== TABS ===== */}
+      {/* TABS */}
       <div className="px-10">
-        <div className="
-  bg-[#F2EEE6] rounded-xl p-1 text-sm w-full
-  flex md:grid
-  md:grid-cols-6
-  overflow-x-auto md:overflow-visible
-  no-scrollbar
-">
-
+        <div className="bg-[#F2EEE6] rounded-xl p-1 text-sm w-full flex md:grid md:grid-cols-6 overflow-x-auto md:overflow-visible no-scrollbar">
           {[
             "overview",
             "manage pickups",
@@ -53,8 +87,7 @@ export default function VolunteerDashboard() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg capitalize transition text-center whitespace-nowrap w-full $
-{
+              className={`px-4 py-2 rounded-lg capitalize transition text-center whitespace-nowrap w-full ${
                 activeTab === tab
                   ? "bg-white text-green-700 font-semibold shadow"
                   : "text-gray-600 hover:bg-white"
@@ -66,40 +99,34 @@ export default function VolunteerDashboard() {
         </div>
       </div>
 
-      {/* ================= OVERVIEW ================= */}
+      {/* OVERVIEW */}
       {activeTab === "overview" && (
         <div className="px-10 py-8">
-
-          {/* STATS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Stat title="Total Pickups" value="68" icon="🚚" />
+            <Stat title="Total Pickups" value={pickups.length} icon="🚚" />
             <Stat title="Events Joined" value="15" icon="🎉" />
             <Stat title="Volunteer Points" value="1450" icon="⭐" />
-            <Stat title="Active Tasks" value="2" icon="📋" />
+            <Stat title="Active Tasks" value={pickups.filter(p => p.status === "pending").length} icon="📋" />
           </div>
 
-          {/* PICKUPS & EVENTS */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
-
-            {/* Upcoming Pickups */}
             <Box title="Upcoming Pickups">
-              <Pickup
-                name="Priya Sharma"
-                date="2024-01-21 · 2:00 PM"
-                location="Sector 22, Noida"
-                status="Confirmed"
-                color="green"
-              />
-              <Pickup
-                name="Rajesh Kumar"
-                date="2024-01-22 · 4:30 PM"
-                location="Connaught Place, Delhi"
-                status="Pending"
-                color="yellow"
-              />
+              {pickups.slice(0, 2).map((pickup) => (
+                <Pickup
+                  key={pickup._id}
+                  name={
+                    pickup.requestedBy === "donor"
+                      ? pickup.donorId?.name
+                      : pickup.ngoId?.name
+                  }
+                  date={`${pickup.pickupDate} · ${pickup.pickupTime}`}
+                  location={pickup.address}
+                  status={pickup.status === "accepted" ? "Confirmed" : "Pending"}
+                  color={pickup.status === "accepted" ? "green" : "yellow"}
+                />
+              ))}
             </Box>
 
-            {/* Available Events */}
             <Box title="Available Events">
               <Event
                 title="Community Food Drive"
@@ -107,98 +134,32 @@ export default function VolunteerDashboard() {
                 location="Central Park, Delhi"
                 action="Register"
               />
-              <Event
-                title="Winter Clothing Distribution"
-                date="2024-02-20 · 2:00 PM"
-                location="City Center, Gurgaon"
-                action="Registered"
-                disabled
-              />
             </Box>
-
           </div>
         </div>
       )}
 
-      {/* ================= MANAGE PICKUPS ================= */}
+      {/* MANAGE PICKUPS */}
       {activeTab === "manage pickups" && (
         <div className="px-10 py-8">
           <Box title="Assigned Pickups">
-            <PickupManage
-              donor="Priya Sharma"
-              category="Food"
-              date="2024-01-21 · 2:00 PM"
-              location="Sector 22, Noida"
-              status="Confirmed"
-            />
-            <PickupManage
-              donor="Rajesh Kumar"
-              category="Clothes"
-              date="2024-01-22 · 4:30 PM"
-              location="Connaught Place, Delhi"
-              status="Pending"
-              actions
-            />
-          </Box>
-        </div>
-      )}
-
-      {/* ================= EVENTS ================= */}
-      {activeTab === "events" && (
-        <div className="px-10 py-8">
-          <Box title="Community Events">
-            <EventDetails
-              title="Community Food Drive"
-              date="2024-02-15"
-              location="Central Park, Delhi"
-              volunteers="25/50"
-            />
-            <EventDetails
-              title="Winter Clothing Distribution"
-              date="2024-02-20"
-              location="City Center, Gurgaon"
-              volunteers="18/30"
-              registered
-            />
-          </Box>
-        </div>
-      )}
-
-      {/* ================= ANALYTICS ================= */}
-      {activeTab === "analytics" && (
-        <div className="px-10 py-8 space-y-6">
-          <Box title="Monthly Activity">
-            <p className="text-sm text-gray-600">
-              You completed <b>18 pickups</b> and earned <b>450 points</b> this month.
-            </p>
-          </Box>
-
-          <Box title="Recent Activities">
-            <ListItem text="Food donation pickup" points="+25 points" />
-            <ListItem text="Community Clean Drive" points="+40 points" />
-            <ListItem text="Books collection" points="+20 points" />
-          </Box>
-        </div>
-      )}
-
-      {/* ================= CERTIFICATES ================= */}
-      {activeTab === "certificates" && (
-        <div className="px-10 py-8">
-          <Box title="Download Certificates">
-            <Certificate title="Food donation pickup" />
-            <Certificate title="Community Clean Drive" />
-            <Certificate title="Books collection" />
-          </Box>
-        </div>
-      )}
-
-      {/* ================= FEEDBACK ================= */}
-      {activeTab === "feedback" && (
-        <div className="px-10 py-8">
-          <Box title="Provide Feedback">
-            <FeedbackItem title="Food donation pickup" />
-            <FeedbackItem title="Community Clean Drive" />
-            <FeedbackItem title="Books collection" />
+            {pickups.map((pickup) => (
+              <PickupManage
+                key={pickup._id}
+                donor={
+                  pickup.requestedBy === "donor"
+                    ? pickup.donorId?.name
+                    : pickup.ngoId?.name
+                }
+                category={pickup.category}
+                date={`${pickup.pickupDate} · ${pickup.pickupTime}`}
+                location={pickup.address}
+                status={pickup.status === "accepted" ? "Confirmed" : "Pending"}
+                actions={pickup.status === "pending"}
+                onAccept={() => acceptPickup(pickup._id)}
+                onDecline={() => declinePickup(pickup._id)}
+              />
+            ))}
           </Box>
         </div>
       )}
@@ -206,7 +167,7 @@ export default function VolunteerDashboard() {
   );
 }
 
-/* ========= REUSABLE COMPONENTS ========= */
+/* ========= REUSABLE COMPONENTS (UNCHANGED UI) ========= */
 
 const Stat = ({ title, value, icon }) => (
   <div className="bg-white p-6 rounded-xl flex justify-between items-center">
@@ -240,27 +201,16 @@ const Pickup = ({ name, date, location, status, color }) => (
   </div>
 );
 
-const Event = ({ title, date, location, action, disabled }) => (
-  <div className="bg-[#F9F7F3] p-4 rounded-lg flex justify-between items-center">
-    <div>
-      <p className="font-medium text-sm">{title}</p>
-      <p className="text-xs text-gray-500">{date}</p>
-      <p className="text-xs text-gray-500">{location}</p>
-    </div>
-    <button
-      disabled={disabled}
-      className={`text-xs px-4 py-1.5 rounded-lg ${
-        disabled
-          ? "bg-gray-300 text-gray-500"
-          : "bg-green-500 text-white hover:bg-green-600"
-      }`}
-    >
-      {action}
-    </button>
-  </div>
-);
-
-const PickupManage = ({ donor, category, date, location, status, actions }) => (
+const PickupManage = ({
+  donor,
+  category,
+  date,
+  location,
+  status,
+  actions,
+  onAccept,
+  onDecline
+}) => (
   <div className="bg-[#F9F7F3] p-5 rounded-lg flex justify-between items-center">
     <div>
       <p className="font-medium text-sm">Pickup from {donor}</p>
@@ -270,8 +220,12 @@ const PickupManage = ({ donor, category, date, location, status, actions }) => (
     </div>
     {actions ? (
       <div className="flex gap-2">
-        <button className="bg-green-500 text-white px-3 py-1 rounded-lg text-xs">Accept</button>
-        <button className="border px-3 py-1 rounded-lg text-xs">Decline</button>
+        <button onClick={onAccept} className="bg-green-500 text-white px-3 py-1 rounded-lg text-xs">
+          Accept
+        </button>
+        <button onClick={onDecline} className="border px-3 py-1 rounded-lg text-xs">
+          Decline
+        </button>
       </div>
     ) : (
       <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
@@ -281,46 +235,15 @@ const PickupManage = ({ donor, category, date, location, status, actions }) => (
   </div>
 );
 
-const EventDetails = ({ title, date, location, volunteers, registered }) => (
-  <div className="bg-[#F9F7F3] p-5 rounded-lg flex justify-between items-center">
+const Event = ({ title, date, location, action }) => (
+  <div className="bg-[#F9F7F3] p-4 rounded-lg flex justify-between items-center">
     <div>
       <p className="font-medium text-sm">{title}</p>
-      <p className="text-xs text-gray-500">📅 {date}</p>
-      <p className="text-xs text-gray-500">📍 {location}</p>
-      <p className="text-xs text-gray-500">Volunteers: {volunteers}</p>
+      <p className="text-xs text-gray-500">{date}</p>
+      <p className="text-xs text-gray-500">{location}</p>
     </div>
-    <div className="flex gap-2">
-      <button className="border px-3 py-1 rounded-lg text-xs">Details</button>
-      <button className={`px-3 py-1 rounded-lg text-xs ${
-        registered ? "bg-gray-300 text-gray-500" : "bg-green-500 text-white"
-      }`}>
-        {registered ? "Registered" : "Register"}
-      </button>
-    </div>
-  </div>
-);
-
-const Certificate = ({ title }) => (
-  <div className="flex justify-between items-center bg-[#F9F7F3] p-4 rounded-lg">
-    <p className="text-sm">{title}</p>
     <button className="text-xs bg-green-500 text-white px-4 py-1.5 rounded-lg">
-      Download PDF
+      {action}
     </button>
-  </div>
-);
-
-const FeedbackItem = ({ title }) => (
-  <div className="flex justify-between items-center bg-[#F9F7F3] p-4 rounded-lg">
-    <p className="text-sm">{title}</p>
-    <button className="text-xs border px-4 py-1.5 rounded-lg">
-      Rate Experience
-    </button>
-  </div>
-);
-
-const ListItem = ({ text, points }) => (
-  <div className="flex justify-between items-center bg-[#F9F7F3] p-4 rounded-lg">
-    <p className="text-sm">{text}</p>
-    <span className="text-xs text-green-600">{points}</span>
   </div>
 );

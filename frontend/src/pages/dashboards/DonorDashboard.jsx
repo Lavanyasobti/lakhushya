@@ -303,7 +303,8 @@ export default function DonorDashboard() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        donorId,
+        userId: donorId,
+        role: "donor", 
         itemName,
         category,
         quantity,
@@ -312,12 +313,16 @@ export default function DonorDashboard() {
         address
       })
     })
-      .then((res) => res.text())
-      .then((msg) => {
-        alert(msg);
+        .then((res) => res.json())
+        .then((data) => {
+        alert(data.message);
+
         setItemName("");
         setCategory("");
         setQuantity("");
+        setPickupDate("");
+        setPickupTime("");
+        setAddress("");
       });
   }}
 >
@@ -330,27 +335,62 @@ export default function DonorDashboard() {
 
   </div>
 )}
-{donations.length === 0 && (
-  <p className="text-gray-500 text-sm">No donations found</p>
+{activeTab === "track donations" && (
+  <div className="px-10 py-8">
+
+    <h3 className="text-xl font-semibold text-green-900 mb-1">
+      Track Donations
+    </h3>
+
+    <p className="text-gray-600 mb-6">
+      View and track all your donation requests
+    </p>
+
+    {donations.length === 0 ? (
+      <p className="text-gray-500 text-sm">
+        No donations found
+      </p>
+    ) : (
+      <div className="space-y-4">
+        {donations.map((donation) => (
+          <div
+            key={donation._id}
+            className="bg-[#F9F7F3] p-5 rounded-lg flex justify-between items-center"
+          >
+            <div>
+              <p className="font-medium text-sm">
+                {donation.itemName}
+              </p>
+
+              <p className="text-xs text-gray-500">
+                Category: {donation.category} | Quantity: {donation.quantity}
+              </p>
+
+              <p className="text-xs text-gray-500">
+                Pickup: {donation.pickupDate} · {donation.pickupTime}
+              </p>
+            </div>
+
+            <span
+              className={`text-xs px-3 py-1 rounded-full ${
+                donation.status === "accepted"
+                  ? "bg-green-100 text-green-700"
+                  : donation.status === "declined"
+                  ? "bg-red-100 text-red-700"
+                  : "bg-yellow-100 text-yellow-700"
+              }`}
+            >
+              {donation.status}
+            </span>
+          </div>
+        ))}
+      </div>
+    )}
+
+  </div>
 )}
 
-{donations.map((donation) => (
-  <div
-    key={donation._id}
-    className="bg-[#F9F7F3] p-5 rounded-lg flex justify-between items-center mb-4"
-  >
-    <div>
-      <p className="font-medium text-sm">{donation.itemName}</p>
-      <p className="text-xs text-gray-500">
-        Category: {donation.category} | Quantity: {donation.quantity}
-      </p>
-    </div>
 
-    <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
-      {donation.status}
-    </span>
-  </div>
-))}
 {activeTab === "events" && (
   <div className="px-10 py-8">
 
