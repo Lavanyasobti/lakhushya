@@ -1,7 +1,8 @@
-/*lakshita*/
+
 import heroImage from "../assets/hero.png";
 import { useNavigate } from "react-router-dom";
-/*hi*/
+
+
 export default function Home() {
   const navigate = useNavigate();
 
@@ -10,7 +11,7 @@ export default function Home() {
 
       {/* ===== NAVBAR ===== */}
       <div className="flex justify-between items-center px-10 py-6">
-        <h1 className="text-green-600 font-bold text-xl">💚 Lakhushiya</h1>
+        <h1 className="text-green-600 font-bold text-xl">💚 Lakhushya</h1>
 
         <button
           onClick={() => navigate("/login")}

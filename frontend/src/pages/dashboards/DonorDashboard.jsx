@@ -34,7 +34,7 @@ export default function DonorDashboard() {
 
       {/* ===== NAVBAR ===== */}
       <div className="bg-white px-10 py-4 flex justify-between items-center shadow-sm">
-        <h1 className="flex flex-wrap items-center gap-4 text-sm">💚 Lakhushiya</h1>
+        <h1 className="flex flex-wrap items-center gap-4 text-sm">💚 Lakhushya</h1>
 
         <div className="flex items-center gap-6 text-sm">
           <span className="cursor-pointer">Home</span>

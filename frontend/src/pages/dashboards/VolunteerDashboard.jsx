@@ -56,7 +56,7 @@ export default function VolunteerDashboard() {
 
       {/* NAVBAR */}
       <div className="bg-white px-10 py-4 flex justify-between items-center shadow-sm">
-        <h1 className="text-sm font-semibold">💚 Lakhushiya</h1>
+        <h1 className="text-sm font-semibold">💚 Lakhushya</h1>
         <div className="flex items-center gap-6 text-sm">
           <span className="cursor-pointer">Home</span>
           <span className="cursor-pointer">Dashboard</span>
