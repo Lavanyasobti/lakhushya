@@ -1,0 +1,260 @@
+import { useState } from "react";
+
+export default function NgoDashboard() {
+  const [activeTab, setActiveTab] = useState("overview");
+
+  return (
+    <div className="min-h-screen bg-[#FBF7F2]">
+
+      {/* ===== NAVBAR ===== */}
+      <div className="bg-white px-10 py-4 flex justify-between items-center shadow-sm">
+        <h1 className="flex items-center gap-2 text-sm">💚 Lakhushiya</h1>
+
+        <div className="flex items-center gap-6 text-sm">
+          <span className="cursor-pointer">Home</span>
+          <span className="cursor-pointer">Dashboard</span>
+          <span className="text-gray-500 hidden sm:inline">
+            Welcome, NGO
+          </span>
+          <button className="border px-4 py-1 rounded-lg hover:bg-gray-100">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* ===== PAGE HEADER ===== */}
+      <div className="px-10 py-8">
+        <h2 className="text-2xl font-bold text-green-900">
+          NGO Dashboard
+        </h2>
+        <p className="text-gray-600 mt-1">
+          Manage donations, events, and community impact
+        </p>
+      </div>
+
+      {/* ===== TABS ===== */}
+      <div className="px-10">
+        <div className="bg-[#F2EEE6] rounded-xl p-1 flex gap-2 text-sm overflow-x-auto no-scrollbar">
+          {[
+            "overview",
+            "manage donations",
+            "schedule pickups",
+            "manage events",
+            "raise requests",
+            "analytics",
+          ].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 rounded-lg capitalize whitespace-nowrap transition ${
+                activeTab === tab
+                  ? "bg-white text-green-700 font-semibold shadow"
+                  : "text-gray-600 hover:bg-white"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ===== OVERVIEW ===== */}
+      {activeTab === "overview" && (
+        <div className="px-10 py-8">
+
+          {/* STATS */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { label: "Pending Donations", value: "12", icon: "⏳" },
+              { label: "People Served", value: "1,240", icon: "❤️" },
+              { label: "Active Events", value: "4", icon: "🎉" },
+              { label: "This Month", value: "320", icon: "📊" },
+            ].map((item, i) => (
+              <div key={i} className="bg-white p-6 rounded-xl shadow-sm flex justify-between items-center">
+                <div>
+                  <p className="text-gray-500 text-sm">{item.label}</p>
+                  <h3 className="text-3xl font-bold text-green-600 mt-2">
+                    {item.value}
+                  </h3>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-2xl">
+                  {item.icon}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* RECENT DONATIONS & PICKUPS */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
+
+            {/* RECENT DONATIONS */}
+            <div className="bg-white p-6 rounded-xl border">
+              <h3 className="font-semibold mb-4">Recent Donations</h3>
+
+              <div className="space-y-3">
+                {[
+                  "Fresh Vegetables",
+                  "Winter Clothes",
+                  "Books & Stationery",
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex justify-between items-center bg-[#F9F7F3] p-3 rounded-lg"
+                  >
+                    <div>
+                      <p className="text-sm font-medium">{item}</p>
+                      <p className="text-xs text-gray-500">
+                        Donor #{i + 1}
+                      </p>
+                    </div>
+                    <button className="text-xs bg-green-500 text-white px-3 py-1 rounded-lg">
+                      Accept
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* TODAY PICKUPS */}
+            <div className="bg-white p-6 rounded-xl border">
+              <h3 className="font-semibold mb-4">Today’s Pickups</h3>
+
+              <div className="space-y-3">
+                <div className="flex justify-between bg-[#F9F7F3] p-3 rounded-lg">
+                  <div>
+                    <p className="text-sm font-medium">Food Donation</p>
+                    <p className="text-xs text-gray-500">10:00 AM · Delhi</p>
+                  </div>
+                  <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                    Confirmed
+                  </span>
+                </div>
+
+                <div className="flex justify-between bg-[#F9F7F3] p-3 rounded-lg">
+                  <div>
+                    <p className="text-sm font-medium">Clothes</p>
+                    <p className="text-xs text-gray-500">1:00 PM · Jaipur</p>
+                  </div>
+                  <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
+                    Pending
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ===== MANAGE DONATIONS ===== */}
+      {activeTab === "manage donations" && (
+        <div className="px-10 py-8 space-y-4">
+          {["Food Packets", "Winter Clothes", "Books"].map((item, i) => (
+            <div key={i} className="bg-white p-6 rounded-xl border flex justify-between">
+              <div>
+                <p className="font-medium">{item}</p>
+                <p className="text-xs text-gray-500">Qty: 20 · Donor #{i + 1}</p>
+              </div>
+              <div className="flex gap-3">
+                <button className="border px-4 py-1 rounded-lg text-sm">
+                  Decline
+                </button>
+                <button className="bg-green-500 text-white px-4 py-1 rounded-lg text-sm">
+                  Accept
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ===== SCHEDULE PICKUPS ===== */}
+      {activeTab === "schedule pickups" && (
+        <div className="px-10 py-8 space-y-4">
+          <div className="bg-white p-6 rounded-xl border flex justify-between">
+            <div>
+              <p className="font-medium">Food Donation</p>
+              <p className="text-xs text-gray-500">
+                Volunteer: Rahul · 10:00 AM
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button className="border px-4 py-1 rounded-lg text-sm">
+                Reschedule
+              </button>
+              <button className="bg-green-500 text-white px-4 py-1 rounded-lg text-sm">
+                Contact
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== MANAGE EVENTS ===== */}
+      {activeTab === "manage events" && (
+        <div className="px-10 py-8 max-w-3xl">
+          <div className="bg-white p-6 rounded-xl border">
+            <h3 className="font-semibold mb-4">Create New Event</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input className="border p-3 rounded-lg" placeholder="Event Title" />
+              <input type="date" className="border p-3 rounded-lg" />
+              <input className="border p-3 rounded-lg" placeholder="Location" />
+              <input className="border p-3 rounded-lg" placeholder="Max Participants" />
+              <textarea
+                className="border p-3 rounded-lg md:col-span-2"
+                placeholder="Event Description"
+              />
+            </div>
+
+            <button className="mt-4 bg-green-500 text-white px-6 py-2 rounded-lg">
+              Create Event
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ===== RAISE REQUESTS ===== */}
+      {activeTab === "raise requests" && (
+        <div className="px-10 py-8 max-w-3xl">
+          <div className="bg-white p-6 rounded-xl border">
+            <h3 className="font-semibold mb-4">Raise Donation Request</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <select className="border p-3 rounded-lg">
+                <option>Food</option>
+                <option>Clothes</option>
+                <option>Books</option>
+              </select>
+              <input className="border p-3 rounded-lg" placeholder="Required Quantity" />
+              <input type="date" className="border p-3 rounded-lg" />
+              <textarea
+                className="border p-3 rounded-lg md:col-span-2"
+                placeholder="Description"
+              />
+            </div>
+
+            <button className="mt-4 bg-green-500 text-white px-6 py-2 rounded-lg">
+              Publish Request
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ===== ANALYTICS ===== */}
+      {activeTab === "analytics" && (
+        <div className="px-10 py-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {["Food", "Clothes", "Books", "Hygiene"].map((item, i) => (
+            <div key={i} className="bg-white p-6 rounded-xl border">
+              <p className="text-sm text-gray-500">{item}</p>
+              <h3 className="text-2xl font-bold text-green-600 mt-2">
+                {Math.floor(Math.random() * 500) + 100}
+              </h3>
+            </div>
+          ))}
+        </div>
+      )}
+
+    </div>
+  );
+}
