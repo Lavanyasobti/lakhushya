@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState ,useCallback} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 export default function VolunteerDashboard() {
@@ -14,20 +14,20 @@ export default function VolunteerDashboard() {
       localStorage.removeItem("role");
       navigate("/login");
     };
-
+const fetchPickups = useCallback(async () => {
+  try {
+    const res = await axios.get(
+      `http://localhost:5000/volunteer/pickups/${volunteerId}`
+    );
+    setPickups(res.data);
+  } catch (err) {
+    console.error(err);
+  }
+}, [volunteerId]);
   useEffect(() => {
     fetchPickups();
-  }, []);
-
-  const fetchPickups = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/volunteer/pickups${volunteerId}");
-      setPickups(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
+  }, [fetchPickups]);
+  
   const acceptPickup = async (id) => {
     try {
       await axios.post(
@@ -161,7 +161,7 @@ export default function VolunteerDashboard() {
                 date={`${pickup.pickupDate} · ${pickup.pickupTime}`}
                 location={pickup.address}
                 status={pickup.status === "accepted" ? "Confirmed" : "Pending"}
-                actions={pickup.status === "pending"}
+                actions={pickup.status === "ngo_approved"}
                 onAccept={() => acceptPickup(pickup._id)}
                 onDecline={() => declinePickup(pickup._id)}
               />

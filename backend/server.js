@@ -57,7 +57,7 @@ app.post("/donation/create", async (req, res) => {
   try {
     const {
       userId,
-      role,           // "donor" or "ngo"
+      role,
       itemName,
       category,
       quantity,
@@ -66,35 +66,31 @@ app.post("/donation/create", async (req, res) => {
       address
     } = req.body;
 
-    const donationData = {
+    const donation = new Donation({
+      donorId: role === "donor" ? userId : null,
+      ngoId: null,                     // IMPORTANT
       itemName,
       category,
       quantity,
       pickupDate,
       pickupTime,
       address,
-      requestedBy: role
-    };
+      requestedBy: role,
+      status: "pending_ngo"            // MUST match enum
+    });
 
-    if (role === "donor") {
-      donationData.donorId = userId;
-    }
-
-    if (role === "ngo") {
-      donationData.ngoId = userId;
-    }
-
-    const donation = new Donation(donationData);
     await donation.save();
 
     res.status(201).json({
-      message:"Pickup request created successfully"
+      message: "Pickup request created successfully"
     });
 
   } catch (err) {
+    console.error("DONATION CREATE ERROR:", err); // ⭐ ADD THIS
     res.status(500).json({ error: err.message });
   }
 });
+
 
 
 app.get("/donation/:donorId", async (req, res) => {
@@ -108,14 +104,60 @@ app.get("/donation/:donorId", async (req, res) => {
 app.get("/ngo/donations/:ngoId", async (req, res) => {
   try {
     const donations = await Donation.find({
-      ngoId: req.params.ngoId
-    });
+      status: {
+        $in: ["pending_ngo", "ngo_approved", "ngo_declined"]
+      }
+    }).populate("donorId", "name");
 
     res.json(donations);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+
+// NGO ACCEPT DONATION
+app.post("/ngo/accept/:id", async (req, res) => {
+  const donation = await Donation.findByIdAndUpdate(
+    req.params.id,
+    {
+      status: "ngo_approved"
+    },
+    { new: true }
+  );
+
+  res.json(donation);
+});
+
+app.post("/ngo/decline/:id", async (req, res) => {
+  const donation = await Donation.findByIdAndUpdate(
+    req.params.id,
+    { status: "declined" },
+    { new: true }
+  );
+
+  res.json(donation);
+});
+
+
+
+// NGO: SEE ALL DONATIONS WAITING FOR NGO APPROVAL
+app.get("/ngo/pending-donations", async (req, res) => {
+  try {
+    const donations = await Donation.find({
+      status: "pending",
+      requestedBy: "donor",
+      ngoId: null
+    }).populate("donorId", "name");
+
+    res.json(donations);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
 // ADMIN: GET ALL USERS
 app.get("/admin/users", async (req, res) => {
   const users = await User.find();
@@ -138,10 +180,13 @@ app.listen(5000, () => {
 app.get("/volunteer/pickups/:volunteerId", async (req, res) => {
   try {
     const { volunteerId } = req.params;
+
     const pickups = await Donation.find({
       $or: [
-  {status : "pending"},{volunteerId: volunteerId}]
-   })
+        { status: "ngo_approved" }, // 👈 NGO approved, waiting for volunteer
+        { volunteerId: volunteerId } // 👈 already accepted by this volunteer
+      ]
+    })
       .populate("donorId", "name")
       .populate("ngoId", "name");
 
@@ -150,6 +195,9 @@ app.get("/volunteer/pickups/:volunteerId", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
+
 // VOLUNTEER ACCEPT PICKUP
 app.post("/volunteer/accept/:donationId", async (req, res) => {
   try {
@@ -164,25 +212,20 @@ app.post("/volunteer/accept/:donationId", async (req, res) => {
       { new: true }
     );
 
-    res.json({
-      message: "Pickup accepted",
-      donation
-    });
-
+    res.json(donation);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+
 // VOLUNTEER DECLINE PICKUP
 app.post("/volunteer/decline/:donationId", async (req, res) => {
-  try {
-    await Donation.findByIdAndUpdate(req.params.donationId, {
-      status: "declined"
-    });
+  await Donation.findByIdAndUpdate(
+    req.params.donationId,
+    { status: "declined_by_volunteer" }
+  );
 
-    res.json({ message: "Pickup declined" });
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  res.json({ message: "Pickup declined" });
 });
+

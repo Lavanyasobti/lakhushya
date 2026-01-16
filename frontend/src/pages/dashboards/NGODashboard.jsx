@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 export default function NgoDashboard() {
     const [activeTab, setActiveTab] = useState("overview");
+    // eslint-disable-next-line no-unused-vars
     const [donations, setDonations] = useState([]);
+
+
     const ngoId = localStorage.getItem("userId");
     const navigate = useNavigate();
     
@@ -14,15 +17,10 @@ export default function NgoDashboard() {
     useEffect(() => {
         fetch(`http://localhost:5000/ngo/donations/${ngoId}`)
             .then(res => res.json())
-            .then(data => setDonations(data));
-    }, [ngoId]);
-    useEffect(() => {
-        fetch(`http://localhost:5000/ngo/donations/${ngoId}`)
-            .then(res => res.json())
             .then(data => setDonations(data))
             .catch(err => console.log(err));
     }, [ngoId]);
-
+    
   return (
     <div className="min-h-screen bg-[#FBF7F2]">
 
@@ -79,136 +77,173 @@ export default function NgoDashboard() {
       </div>
 
       {/* ===== OVERVIEW ===== */}
-      {activeTab === "overview" && (
-        <div className="px-10 py-8">
+{activeTab === "overview" && (
+  <div className="px-10 py-8">
 
-          {/* STATS */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { label: "Pending Donations", value: "12", icon: "⏳" },
-              { label: "People Served", value: "1,240", icon: "❤️" },
-              { label: "Active Events", value: "4", icon: "🎉" },
-              { label: "This Month", value: "320", icon: "📊" },
-            ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-xl shadow-sm flex justify-between items-center">
-                <div>
-                  <p className="text-gray-500 text-sm">{item.label}</p>
-                  <h3 className="text-3xl font-bold text-green-600 mt-2">
-                    {item.value}
-                  </h3>
-                </div>
-                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-2xl">
-                  {item.icon}
-                </div>
-              </div>
-            ))}
+    {/* STATS */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {[
+        { label: "Pending Donations", value: "12", icon: "⏳" },
+        { label: "People Served", value: "1,240", icon: "❤️" },
+        { label: "Active Events", value: "4", icon: "🎉" },
+        { label: "This Month", value: "320", icon: "📊" },
+      ].map((item, i) => (
+        <div
+          key={i}
+          className="bg-white p-6 rounded-xl shadow-sm flex justify-between items-center"
+        >
+          <div>
+            <p className="text-gray-500 text-sm">{item.label}</p>
+            <h3 className="text-3xl font-bold text-green-600 mt-2">
+              {item.value}
+            </h3>
           </div>
-
-          {/* RECENT DONATIONS & PICKUPS */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
-
-            {/* RECENT DONATIONS */}
-            <div className="bg-white p-6 rounded-xl border">
-              <h3 className="font-semibold mb-4">Recent Donations</h3>
-
-              <div className="space-y-3">
-                {[
-                  "Fresh Vegetables",
-                  "Winter Clothes",
-                  "Books & Stationery",
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex justify-between items-center bg-[#F9F7F3] p-3 rounded-lg"
-                  >
-                    <div>
-                      <p className="text-sm font-medium">{item}</p>
-                      <p className="text-xs text-gray-500">
-                        Donor #{i + 1}
-                      </p>
-                    </div>
-                    <button className="text-xs bg-green-500 text-white px-3 py-1 rounded-lg">
-                      Accept
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* TODAY PICKUPS */}
-            <div className="bg-white p-6 rounded-xl border">
-              <h3 className="font-semibold mb-4">Today’s Pickups</h3>
-
-              <div className="space-y-3">
-                <div className="flex justify-between bg-[#F9F7F3] p-3 rounded-lg">
-                  <div>
-                    <p className="text-sm font-medium">Food Donation</p>
-                    <p className="text-xs text-gray-500">10:00 AM · Delhi</p>
-                  </div>
-                  <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
-                    Confirmed
-                  </span>
-                </div>
-
-                <div className="flex justify-between bg-[#F9F7F3] p-3 rounded-lg">
-                  <div>
-                    <p className="text-sm font-medium">Clothes</p>
-                    <p className="text-xs text-gray-500">1:00 PM · Jaipur</p>
-                  </div>
-                  <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
-                    Pending
-                  </span>
-                </div>
-              </div>
-            </div>
-
+          <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-2xl">
+            {item.icon}
           </div>
         </div>
-      )}
+      ))}
+    </div>
+
+    {/* RECENT DONATIONS & PICKUPS */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
+
+      {/* RECENT DONATIONS */}
+      <div className="bg-white p-6 rounded-xl border">
+        <h3 className="font-semibold mb-4">Recent Donations</h3>
+
+        <div className="space-y-3">
+          {donations.length === 0 ? (
+            <p className="text-gray-500 text-sm">No donations</p>
+          ) : (
+            donations.map((donation) => (
+              <div
+                key={donation._id}
+                className="bg-white p-4 rounded-xl border flex justify-between items-center"
+              >
+                <div>
+                  <p className="font-medium">{donation.itemName}</p>
+                  <p className="text-xs text-gray-500">
+                    Qty: {donation.quantity} · {donation.donorId?.name}
+                  </p>
+                </div>
+
+                <span
+  className={`text-xs px-4 py-1 rounded-full ${
+    donation.status === "pending_ngo"
+      ? "bg-yellow-100 text-yellow-700"
+      : donation.status === "ngo_approved"
+      ? "bg-green-100 text-green-700"
+      : "bg-red-100 text-red-700"
+  }`}
+>
+  {donation.status.replace("_", " ")}
+</span>
+
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* TODAY’S PICKUPS */}
+      <div className="bg-white p-6 rounded-xl border">
+        <h3 className="font-semibold mb-4">Today’s Pickups</h3>
+
+        <div className="space-y-3">
+          <div className="flex justify-between bg-[#F9F7F3] p-3 rounded-lg">
+            <div>
+              <p className="text-sm font-medium">Food Donation</p>
+              <p className="text-xs text-gray-500">10:00 AM · Delhi</p>
+            </div>
+            <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+              Confirmed
+            </span>
+          </div>
+
+          <div className="flex justify-between bg-[#F9F7F3] p-3 rounded-lg">
+            <div>
+              <p className="text-sm font-medium">Clothes</p>
+              <p className="text-xs text-gray-500">1:00 PM · Jaipur</p>
+            </div>
+            <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
+              Pending
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+)}
 
       {/* ===== MANAGE DONATIONS ===== */}
-      {activeTab === "manage donations" && (
-        <div className="px-10 py-8 space-y-4">
-          {["Food Packets", "Winter Clothes", "Books"].map((item, i) => (
-            <div key={i} className="bg-white p-6 rounded-xl border flex justify-between">
-              <div>
-                <p className="font-medium">{item}</p>
-                <p className="text-xs text-gray-500">Qty: 20 · Donor #{i + 1}</p>
-              </div>
-              <div className="flex gap-3">
-                <button className="border px-4 py-1 rounded-lg text-sm">
+{activeTab === "manage donations" && (
+  <div className="px-10 py-8 space-y-4">
+    {donations.length === 0 ? (
+      <p className="text-gray-500 text-sm">No donations</p>
+    ) : (
+      donations.map((donation) => (
+        <div
+          key={donation._id}
+          className="bg-white p-6 rounded-xl border flex justify-between items-center"
+        >
+          <div>
+            <p className="font-medium">{donation.itemName}</p>
+            <p className="text-xs text-gray-500">
+              Qty: {donation.quantity} · {donation.donorId?.name}
+            </p>
+          </div>
+
+          {/* RIGHT SIDE */}
+          <div className="flex gap-3 items-center">
+            {/* PENDING NGO */}
+            {donation.status === "pending_ngo" && (
+              <>
+                <button
+                  className="border px-4 py-1 rounded-lg text-sm"
+                  onClick={() =>
+                    fetch(`http://localhost:5000/ngo/decline/${donation._id}`, {
+                      method: "POST",
+                    }).then(() => window.location.reload())
+                  }
+                >
                   Decline
                 </button>
-                <button className="bg-green-500 text-white px-4 py-1 rounded-lg text-sm">
+
+                <button
+                  className="bg-green-500 text-white px-4 py-1 rounded-lg text-sm"
+                  onClick={() =>
+                    fetch(`http://localhost:5000/ngo/accept/${donation._id}`, {
+                      method: "POST",
+                    }).then(() => window.location.reload())
+                  }
+                >
                   Accept
                 </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+              </>
+            )}
 
-      {/* ===== SCHEDULE PICKUPS ===== */}
-      {activeTab === "schedule pickups" && (
-        <div className="px-10 py-8 space-y-4">
-          <div className="bg-white p-6 rounded-xl border flex justify-between">
-            <div>
-              <p className="font-medium">Food Donation</p>
-              <p className="text-xs text-gray-500">
-                Volunteer: Rahul · 10:00 AM
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <button className="border px-4 py-1 rounded-lg text-sm">
-                Reschedule
-              </button>
-              <button className="bg-green-500 text-white px-4 py-1 rounded-lg text-sm">
-                Contact
-              </button>
-            </div>
+            {/* NGO APPROVED */}
+            {donation.status === "ngo_approved" && (
+              <span className="text-xs bg-green-100 text-green-700 px-4 py-1 rounded-full">
+                Accepted
+              </span>
+            )}
+
+            {/* NGO DECLINED */}
+            {donation.status === "ngo_declined" && (
+              <span className="text-xs bg-red-100 text-red-700 px-4 py-1 rounded-full">
+                Declined
+              </span>
+            )}
           </div>
         </div>
-      )}
+      ))
+    )}
+  </div>
+)}
+
 
       {/* ===== MANAGE EVENTS ===== */}
       {activeTab === "manage events" && (
