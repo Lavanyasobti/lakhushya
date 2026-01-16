@@ -26,7 +26,7 @@ export default function NgoDashboard() {
 
       {/* ===== NAVBAR ===== */}
       <div className="bg-white px-10 py-4 flex justify-between items-center shadow-sm">
-        <h1 className="flex items-center gap-2 text-sm">💚 Lakhushiya</h1>
+        <h1 className="flex items-center gap-2 text-sm">💚 Lakhushya</h1>
 
         <div className="flex items-center gap-6 text-sm">
           <span className="cursor-pointer">Home</span>
@@ -52,29 +52,32 @@ export default function NgoDashboard() {
 
       {/* ===== TABS ===== */}
       <div className="px-10">
-        <div className="bg-[#F2EEE6] rounded-xl p-1 flex gap-2 text-sm overflow-x-auto no-scrollbar">
-          {[
-            "overview",
-            "manage donations",
-            "schedule pickups",
-            "manage events",
-            "raise requests",
-            "analytics",
-          ].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg capitalize whitespace-nowrap transition ${
-                activeTab === tab
-                  ? "bg-white text-green-700 font-semibold shadow"
-                  : "text-gray-600 hover:bg-white"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-      </div>
+  <div className="bg-[#F2EEE6] rounded-xl p-1">
+    <div className="grid grid-cols-6 gap-2 text-sm">
+      {[
+        "overview",
+        "manage donations",
+        "schedule pickups",
+        "manage events",
+        "raise requests",
+        "analytics",
+      ].map((tab) => (
+        <button
+          key={tab}
+          onClick={() => setActiveTab(tab)}
+          className={`py-2 rounded-lg capitalize transition ${
+            activeTab === tab
+              ? "bg-white text-green-700 font-semibold shadow"
+              : "text-gray-600 hover:bg-white"
+          }`}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
+
 
       {/* ===== OVERVIEW ===== */}
 {activeTab === "overview" && (
