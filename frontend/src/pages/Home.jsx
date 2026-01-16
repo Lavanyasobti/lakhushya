@@ -108,9 +108,9 @@ export default function Home() {
 
         {/* ABOUT */}
         <div className="mt-16 px-10 py-16 bg-white rounded-xl shadow-md">
-          <h2 className="text-4xl font-bold text-green-900 text-center">About Lakhushiya</h2>
+          <h2 className="text-4xl font-bold text-green-900 text-center">About Lakhushya</h2>
           <p className="text-gray-600 max-w-3xl mx-auto mt-6 text-center leading-relaxed">
-            Lakhushiya is a platform that connects donors, NGOs, and volunteers
+            Lakhushya is a platform that connects donors, NGOs, and volunteers
             to reduce food waste and spread happiness. Our mission is to turn
             surplus resources into smiles by ensuring that excess food reaches
             those who need it the most.
@@ -122,7 +122,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center text-green-600">What People Say</h2>
           <div className="flex overflow-x-scroll gap-6 mt-6 p-4 scrollbar-hide">
             <div className="bg-white p-6 rounded-xl shadow-md min-w-[250px] flex-shrink-0">
-              <p>"Thanks to Lakhushiya, I could donate surplus food easily!"</p>
+              <p>"Thanks to Lakhushya, I could donate surplus food easily!"</p>
               <h4 className="mt-4 font-bold text-green-600">- Aman</h4>
             </div>
             <div className="bg-white p-6 rounded-xl shadow-md min-w-[250px] flex-shrink-0">
