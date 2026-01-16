@@ -24,23 +24,10 @@ const fetchPickups = useCallback(async () => {
     console.error(err);
   }
 }, [volunteerId]);
-
   useEffect(() => {
     fetchPickups();
-  }, [fetchPickups]);
+  }, [fetchPickups]);  //THIS LINE CONFLICTED
 
-  
-
-      setPickups(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
- 
-
-useEffect(() => {
-  fetchEvents();
-}, []);
 
 const fetchEvents = async () => {
   try {
@@ -51,7 +38,9 @@ const fetchEvents = async () => {
     console.error(err);
   }
 };
-
+useEffect(() => {
+  fetchEvents();
+}, []);
   const acceptPickup = async (id) => {
     try {
       await axios.post(

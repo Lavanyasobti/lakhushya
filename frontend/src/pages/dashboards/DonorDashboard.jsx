@@ -47,6 +47,7 @@ useEffect(() => {
   return event.registeredUsers?.some(
     (u) => u.userId === donorId && u.role === "Donor"
   );
+};
 const getStatusBadge = (status) => {
   switch (status) {
     // NGO stage
@@ -467,6 +468,7 @@ const formatStatus = (status) => {
   const isRegistered = event.registeredUsers?.some(
     u => u.userId === donorId
   );
+  
 
   return (
     <div key={event._id} className="bg-white p-6 rounded-xl border mb-4">
@@ -724,4 +726,4 @@ const formatStatus = (status) => {
 
     </div>
   );
-  }}
+  }
