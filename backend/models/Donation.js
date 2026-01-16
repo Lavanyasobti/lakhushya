@@ -32,10 +32,19 @@ const donationSchema = new mongoose.Schema({
 
   // PICKUP STATUS
   status: {
-    type: String,
-    enum: ["pending", "accepted", "declined", "picked", "completed"],
-    default: "pending"
-  },
+  type: String,
+  enum: [
+    "pending_ngo",      // donor created, waiting for NGO
+    "ngo_approved",     // NGO approved
+    "accepted",         // volunteer accepted
+    "declined",         // NGO or volunteer declined
+    "picked",
+    "completed"
+  ],
+  default: "pending_ngo"
+},
+
+
 
   // VOLUNTEER WHO ACCEPTED
   volunteerId: {

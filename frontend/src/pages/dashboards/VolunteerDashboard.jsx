@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState ,useCallback} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 export default function VolunteerDashboard() {
@@ -14,16 +14,22 @@ export default function VolunteerDashboard() {
       localStorage.removeItem("role");
       navigate("/login");
     };
+const fetchPickups = useCallback(async () => {
+  try {
+    const res = await axios.get(
+      `http://localhost:5000/volunteer/pickups/${volunteerId}`
+    );
+    setPickups(res.data);
+  } catch (err) {
+    console.error(err);
+  }
+}, [volunteerId]);
 
   useEffect(() => {
     fetchPickups();
-  }, []);
+  }, [fetchPickups]);
 
-  const fetchPickups = async () => {
-    try {
-      const res = await axios.get(
-  `http://localhost:5000/volunteer/pickups/${volunteerId}`
-);
+  
 
       setPickups(res.data);
     } catch (err) {
@@ -78,7 +84,7 @@ const fetchEvents = async () => {
 
       {/* NAVBAR */}
       <div className="bg-white px-10 py-4 flex justify-between items-center shadow-sm">
-        <h1 className="text-sm font-semibold">💚 Lakhushiya</h1>
+        <h1 className="text-sm font-semibold">💚 Lakhushya</h1>
         <div className="flex items-center gap-6 text-sm">
           <span className="cursor-pointer">Home</span>
           <span className="cursor-pointer">Dashboard</span>
@@ -183,7 +189,7 @@ const fetchEvents = async () => {
                 date={`${pickup.pickupDate} · ${pickup.pickupTime}`}
                 location={pickup.address}
                 status={pickup.status === "accepted" ? "Confirmed" : "Pending"}
-                actions={pickup.status === "pending"}
+                actions={pickup.status === "ngo_approved"}
                 onAccept={() => acceptPickup(pickup._id)}
                 onDecline={() => declinePickup(pickup._id)}
               />

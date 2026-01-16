@@ -47,6 +47,35 @@ useEffect(() => {
   return event.registeredUsers?.some(
     (u) => u.userId === donorId && u.role === "Donor"
   );
+const getStatusBadge = (status) => {
+  switch (status) {
+    // NGO stage
+    case "pending_ngo":
+      return "bg-yellow-100 text-yellow-700";
+    case "ngo_approved":
+      return "bg-blue-100 text-blue-700";
+    case "ngo_declined":
+      return "bg-orange-100 text-orange-700";
+
+    // Volunteer stage
+    case "pending_volunteer":
+      return "bg-yellow-200 text-yellow-800";
+    case "accepted":
+      return "bg-green-100 text-green-700";
+    case "declined":
+    case "declined_by_volunteer":
+      return "bg-red-100 text-red-700";
+
+    default:
+      return "bg-gray-100 text-gray-600";
+  }
+};
+const formatStatus = (status) => {
+  return status
+    .replace(/_/g, " ")
+    .replace(/\bngo\b/i, "NGO")
+    .replace(/\bvolunteer\b/i, "Volunteer")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 };
 
 
@@ -55,7 +84,7 @@ useEffect(() => {
 
       {/* ===== NAVBAR ===== */}
       <div className="bg-white px-10 py-4 flex justify-between items-center shadow-sm">
-        <h1 className="flex flex-wrap items-center gap-4 text-sm">💚 Lakhushiya</h1>
+        <h1 className="flex flex-wrap items-center gap-4 text-sm">💚 Lakhushya</h1>
 
         <div className="flex items-center gap-6 text-sm">
           <span className="cursor-pointer">Home</span>
@@ -345,7 +374,8 @@ useEffect(() => {
     })
         .then((res) => res.json())
         .then((data) => {
-        alert(data.message);
+        alert(data?.message);
+
 
         setItemName("");
         setCategory("");
@@ -402,7 +432,7 @@ useEffect(() => {
             </div>
 
             <span
-              className={`text-xs px-3 py-1 rounded-full ${
+              className={`text-xs px-3 py-1 rounded-full ${getStatusBadge(donation.status)} ${
                 donation.status === "accepted"
                   ? "bg-green-100 text-green-700"
                   : donation.status === "declined"
@@ -410,7 +440,7 @@ useEffect(() => {
                   : "bg-yellow-100 text-yellow-700"
               }`}
             >
-              {donation.status}
+              {formatStatus(donation.status)}
             </span>
           </div>
         ))}
@@ -694,4 +724,4 @@ useEffect(() => {
 
     </div>
   );
-}
+  }}

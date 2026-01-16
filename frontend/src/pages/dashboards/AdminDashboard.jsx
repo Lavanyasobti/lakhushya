@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
+  // eslint-disable-next-line no-unused-vars
   const [users, setUsers] = useState([]);   
+  // eslint-disable-next-line no-unused-vars
   const [donations, setDonations] = useState([]);
   const navigate = useNavigate();
 
