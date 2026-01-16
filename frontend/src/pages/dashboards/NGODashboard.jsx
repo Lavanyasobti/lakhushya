@@ -5,7 +5,13 @@ export default function NgoDashboard() {
     const [donations, setDonations] = useState([]);
     const ngoId = localStorage.getItem("userId");
     const navigate = useNavigate();
-    
+    const [title, setTitle] = useState("");
+    const [date, setDate] = useState("");
+    const [location, setLocation] = useState("");
+    const [description, setDescription] = useState("");
+    const [events, setEvents] = useState([]);
+    const [editingEventId, setEditingEventId] = useState(null);
+
     const handleLogout = () => {
         localStorage.removeItem("userId");
         localStorage.removeItem("role");
@@ -14,12 +20,13 @@ export default function NgoDashboard() {
     useEffect(() => {
         fetch(`http://localhost:5000/ngo/donations/${ngoId}`)
             .then(res => res.json())
-            .then(data => setDonations(data));
+            .then(data => setDonations(data))
+            .catch(err => console.log(err));
     }, [ngoId]);
     useEffect(() => {
-        fetch(`http://localhost:5000/ngo/donations/${ngoId}`)
+        fetch(`http://localhost:5000/events/ngo/${ngoId}`)
             .then(res => res.json())
-            .then(data => setDonations(data))
+            .then(data => setEvents(data))
             .catch(err => console.log(err));
     }, [ngoId]);
 
@@ -217,22 +224,152 @@ export default function NgoDashboard() {
             <h3 className="font-semibold mb-4">Create New Event</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input className="border p-3 rounded-lg" placeholder="Event Title" />
-              <input type="date" className="border p-3 rounded-lg" />
-              <input className="border p-3 rounded-lg" placeholder="Location" />
-              <input className="border p-3 rounded-lg" placeholder="Max Participants" />
+              <input
+                className="border p-3 rounded-lg"
+                placeholder="Event Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+              <input
+                type="date"
+                className="border p-3 rounded-lg"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+              <input
+                className="border p-3 rounded-lg"
+                placeholder="Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
               <textarea
                 className="border p-3 rounded-lg md:col-span-2"
                 placeholder="Event Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
+
+
             </div>
 
-            <button className="mt-4 bg-green-500 text-white px-6 py-2 rounded-lg">
-              Create Event
+            <button
+  type="button"
+  className="mt-4 bg-green-500 text-white px-6 py-2 rounded-lg"
+  onClick={() => {
+    if (!title || !date || !location || !description) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    fetch(
+  editingEventId
+    ? `http://localhost:5000/events/update/${editingEventId}`
+    : "http://localhost:5000/events/create",
+  {
+    method: editingEventId ? "PUT" : "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ngoId,
+      title,
+      date,
+      location,
+      description
+    })
+  }
+)
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message);
+    setTitle("");
+    setDate("");
+    setLocation("");
+    setDescription("");
+    setEditingEventId(null);
+    fetch(`http://localhost:5000/events/ngo/${ngoId}`)
+    .then(res => res.json())
+    .then(data => setEvents(data));
+  });
+
+  }}
+>
+  Create Event
+</button>
+ {/* ===== EXISTING EVENTS ===== */}
+<div className="mt-8">
+  <h3 className="font-semibold mb-4">Your Events</h3>
+
+  {events.length === 0 ? (
+    <p className="text-sm text-gray-500">No events created yet</p>
+  ) : (
+    events.map(event => (
+      <div
+        key={event._id}
+        className="bg-[#F9F7F3] p-5 rounded-lg mb-4"
+      >
+        <p className="font-semibold">{event.title}</p>
+        <p className="text-xs text-gray-500">📍 {event.location}</p>
+        <p className="text-xs text-gray-500">📅 {event.date}</p>
+        <p className="text-sm mt-2">{event.description}</p>
+        <p className="text-xs text-gray-500">
+            Status: <b>{event.status}</b>
+        </p>
+        {/* REGISTERED USERS */}
+        <div className="mt-3">
+          <p className="text-xs font-medium mb-1">Registered Users</p>
+
+          {event.registeredUsers?.length === 0 ? (
+            <p className="text-xs text-gray-400">No registrations yet</p>
+          ) : (
+            event.registeredUsers.map((u, i) => (
+              <p key={i} className="text-xs text-gray-600">
+                • {u.role} (User ID: {u.userId})
+              </p>
+
+            ))
+          )}
+        </div>
+
+        {/* ACTION BUTTONS */}
+        <div className="flex gap-3 mt-4">
+          <button
+            className="border px-4 py-1 rounded-lg text-sm"
+            onClick={() => {
+                setEditingEventId(event._id);
+                setTitle(event.title);
+                setDate(event.date);
+                setLocation(event.location);
+                setDescription(event.description);
+            }}
+            >
+            Edit
             </button>
+
+
+          <button
+            className="bg-red-500 text-white px-4 py-1 rounded-lg text-sm"
+            onClick={() => {
+              fetch(`http://localhost:5000/events/${event._id}`, {
+                method: "DELETE"
+              })
+                .then(res => res.json())
+                .then(() => {
+                  alert("Event cancelled");
+                  setEvents(events.filter(e => e._id !== event._id));
+                });
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ))
+  )}
+</div>
+
           </div>
         </div>
       )}
+       
 
       {/* ===== RAISE REQUESTS ===== */}
       {activeTab === "raise requests" && (

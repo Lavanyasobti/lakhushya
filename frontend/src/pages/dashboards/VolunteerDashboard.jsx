@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 export default function VolunteerDashboard() {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("events");
   const [pickups, setPickups] = useState([]);
-
+  const [events, setEvents] = useState([]);
   // TEMP – replace later with logged-in volunteer ID
   const volunteerId = localStorage.getItem("userId");
   const navigate = useNavigate();
@@ -21,12 +21,30 @@ export default function VolunteerDashboard() {
 
   const fetchPickups = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/volunteer/pickups${volunteerId}");
+      const res = await axios.get(
+  `http://localhost:5000/volunteer/pickups/${volunteerId}`
+);
+
       setPickups(res.data);
     } catch (err) {
       console.error(err);
     }
   };
+ 
+
+useEffect(() => {
+  fetchEvents();
+}, []);
+
+const fetchEvents = async () => {
+  try {
+    const res = await fetch("http://localhost:5000/events");
+    const data = await res.json();
+    setEvents(data);
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   const acceptPickup = async (id) => {
     try {
@@ -50,7 +68,11 @@ export default function VolunteerDashboard() {
       console.error(err);
     }
   };
-
+  const isRegistered = (event) => {
+  return event.registeredUsers?.some(
+    (u) => u.userId === volunteerId && u.role === "Volunteer"
+  );
+};
   return (
     <div className="min-h-screen bg-[#FBF7F2]">
 
@@ -121,8 +143,8 @@ export default function VolunteerDashboard() {
                 <Pickup
                   key={pickup._id}
                   name={
-                    pickup.requestedBy === "donor"
-                      ? pickup.donorId?.name
+                    pickup.requestedBy === "volunteer"
+                      ? pickup.volunteerId?.name
                       : pickup.ngoId?.name
                   }
                   date={`${pickup.pickupDate} · ${pickup.pickupTime}`}
@@ -152,9 +174,9 @@ export default function VolunteerDashboard() {
             {pickups.map((pickup) => (
               <PickupManage
                 key={pickup._id}
-                donor={
-                  pickup.requestedBy === "donor"
-                    ? pickup.donorId?.name
+                volunteer={
+                  pickup.requestedBy === "volunteer"
+                    ? pickup.volunteerId?.name
                     : pickup.ngoId?.name
                 }
                 category={pickup.category}
@@ -169,6 +191,79 @@ export default function VolunteerDashboard() {
           </Box>
         </div>
       )}
+      {activeTab === "events" && (
+  <div className="px-10 py-8">
+
+    <h3 className="text-xl font-semibold text-green-900 mb-1">
+      Events
+    </h3>
+    <p className="text-gray-600 mb-6">
+      Participate in upcoming community initiatives
+    </p>
+
+    <div className="space-y-6">
+
+    {events.map(event => {
+  const isRegistered = event.registeredUsers?.some(
+    u => u.userId === volunteerId
+  );
+
+  return (
+    <div key={event._id} className="bg-white p-6 rounded-xl border mb-4">
+      <p className="font-semibold text-lg">{event.title}</p>
+
+      <p className="text-sm text-gray-500">
+        🏢 NGO: {event.ngoId?.name || "Unknown NGO"}
+      </p>
+
+      <p className="text-sm text-gray-500">📍 {event.location}</p>
+      <p className="text-sm text-gray-500">📅 {event.date}</p>
+
+      <p className="text-sm mt-2">{event.description}</p>
+
+      <p className="text-xs mt-2 text-gray-500">
+        Status: <b>{event.status}</b>
+      </p>
+
+      {isRegistered ? (
+        <button
+          disabled
+          className="mt-3 bg-gray-300 text-gray-600 px-4 py-1 rounded-lg text-sm cursor-not-allowed"
+        >
+          Registered
+        </button>
+      ) : (
+        <button
+          className="mt-3 bg-green-500 text-white px-4 py-1 rounded-lg text-sm"
+          onClick={() => {
+            fetch(`http://localhost:5000/events/register/${event._id}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                userId: volunteerId,
+                role: "Volunteer"
+              })
+            })
+              .then(res => res.json())
+              .then(data => {
+                alert(data.message);
+                fetchEvents();
+              });
+          }}
+        >
+          Register
+        </button>
+      )}
+    </div>
+  );
+})}
+
+
+
+    </div>
+
+  </div>
+)}
     </div>
   );
 }
@@ -208,7 +303,7 @@ const Pickup = ({ name, date, location, status, color }) => (
 );
 
 const PickupManage = ({
-  donor,
+  volunteer,
   category,
   date,
   location,
@@ -219,7 +314,7 @@ const PickupManage = ({
 }) => (
   <div className="bg-[#F9F7F3] p-5 rounded-lg flex justify-between items-center">
     <div>
-      <p className="font-medium text-sm">Pickup from {donor}</p>
+      <p className="font-medium text-sm">Pickup from {volunteer}</p>
       <p className="text-xs text-gray-500">Category: {category}</p>
       <p className="text-xs text-gray-500">{date}</p>
       <p className="text-xs text-gray-500">{location}</p>

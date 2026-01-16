@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 export default function DonorDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [donations, setDonations] = useState([]);
+  const [events, setEvents] = useState([]);
   const donorId = localStorage.getItem("userId");
   const navigate = useNavigate();
 
@@ -20,6 +21,21 @@ export default function DonorDashboard() {
       setDonations(data);
     });
 }, [donorId]);
+useEffect(() => {
+  fetch("http://localhost:5000/events")
+    .then(res => res.json())
+    .then(data => setEvents(data))
+    .catch(err => console.log(err));
+}, []);
+const fetchEvents = () => {
+  fetch("http://localhost:5000/events")
+    .then(res => res.json())
+    .then(data => setEvents(data))
+    .catch(err => console.log(err));
+};
+useEffect(() => {
+  fetchEvents();
+}, []);
 
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -27,6 +43,11 @@ export default function DonorDashboard() {
   const [pickupDate, setPickupDate] = useState("");
   const [pickupTime, setPickupTime] = useState("");
   const [address, setAddress] = useState("");
+  const isRegistered = (event) => {
+  return event.registeredUsers?.some(
+    (u) => u.userId === donorId && u.role === "Donor"
+  );
+};
 
 
   return (
@@ -412,113 +433,62 @@ export default function DonorDashboard() {
 
     <div className="space-y-6">
 
-      {/* EVENT 1 */}
-      <div className="flex gap-6 items-start bg-white p-6 rounded-xl border border-gray-100">
+   {events.map(event => {
+  const isRegistered = event.registeredUsers?.some(
+    u => u.userId === donorId
+  );
 
-        {/* DATE BOX */}
-        <div className="min-w-[70px] text-center bg-[#F9F7F3] rounded-lg p-2">
-          <p className="text-lg font-bold text-green-700">15</p>
-          <p className="text-xs text-gray-500">FEB</p>
-        </div>
+  return (
+    <div key={event._id} className="bg-white p-6 rounded-xl border mb-4">
+      <p className="font-semibold text-lg">{event.title}</p>
 
-        {/* EVENT DETAILS */}
-        <div className="flex-1">
-          <p className="font-medium text-sm">
-            Community Food Drive
-          </p>
-          <p className="text-xs text-gray-500 mt-1">
-            📍 Central Park, Delhi
-          </p>
-          <p className="text-sm text-gray-600 mt-2">
-            Join us in distributing meals to underprivileged communities.
-          </p>
-        </div>
+      <p className="text-sm text-gray-500">
+        🏢 NGO: {event.ngoId?.name || "Unknown NGO"}
+      </p>
 
-        {/* ACTION */}
-        <div className="self-center flex gap-3">
+      <p className="text-sm text-gray-500">📍 {event.location}</p>
+      <p className="text-sm text-gray-500">📅 {event.date}</p>
 
-  <button className="border border-green-500 text-green-600 px-4 py-2 rounded-lg text-sm hover:bg-green-50 transition">
-    Details
-  </button>
+      <p className="text-sm mt-2">{event.description}</p>
 
-  <button className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition">
-    Register
-  </button>
+      <p className="text-xs mt-2 text-gray-500">
+        Status: <b>{event.status}</b>
+      </p>
 
-</div>
-
-
-      </div>
-
-      {/* EVENT 2 */}
-      <div className="flex gap-6 items-start bg-white p-6 rounded-xl border border-gray-100">
-
-        <div className="min-w-[70px] text-center bg-[#F9F7F3] rounded-lg p-2">
-          <p className="text-lg font-bold text-green-700">20</p>
-          <p className="text-xs text-gray-500">FEB</p>
-        </div>
-
-        <div className="flex-1">
-          <p className="font-medium text-sm">
-            Winter Clothing Distribution
-          </p>
-          <p className="text-xs text-gray-500 mt-1">
-            📍 City Center, Jaipur
-          </p>
-          <p className="text-sm text-gray-600 mt-2">
-            Help distribute warm clothes to families in need.
-          </p>
-        </div>
-
-        <div className="self-center flex gap-3">
-
-  <button className="border border-green-500 text-green-600 px-4 py-2 rounded-lg text-sm hover:bg-green-50 transition">
-    Details
-  </button>
-
-  <button className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition">
-    Register
-  </button>
-
-</div>
+      {isRegistered ? (
+        <button
+          disabled
+          className="mt-3 bg-gray-300 text-gray-600 px-4 py-1 rounded-lg text-sm cursor-not-allowed"
+        >
+          Registered
+        </button>
+      ) : (
+        <button
+          className="mt-3 bg-green-500 text-white px-4 py-1 rounded-lg text-sm"
+          onClick={() => {
+            fetch(`http://localhost:5000/events/register/${event._id}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                userId: donorId,
+                role: "Donor"
+              })
+            })
+              .then(res => res.json())
+              .then(data => {
+                alert(data.message);
+                fetchEvents();
+              });
+          }}
+        >
+          Register
+        </button>
+      )}
+    </div>
+  );
+})}
 
 
-      </div>
-
-      {/* EVENT 3 */}
-      <div className="flex gap-6 items-start bg-white p-6 rounded-xl border border-gray-100">
-
-        <div className="min-w-[70px] text-center bg-[#F9F7F3] rounded-lg p-2">
-          <p className="text-lg font-bold text-green-700">28</p>
-          <p className="text-xs text-gray-500">FEB</p>
-        </div>
-
-        <div className="flex-1">
-          <p className="font-medium text-sm">
-            Education Support Camp
-          </p>
-          <p className="text-xs text-gray-500 mt-1">
-            📍 Community Hall, Lucknow
-          </p>
-          <p className="text-sm text-gray-600 mt-2">
-            Support children with books, stationery, and mentoring.
-          </p>
-        </div>
-
-       <div className="self-center flex gap-3">
-
-  <button className="border border-green-500 text-green-600 px-4 py-2 rounded-lg text-sm hover:bg-green-50 transition">
-    Details
-  </button>
-
-  <button className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition">
-    Register
-  </button>
-
-</div>
-
-
-      </div>
 
     </div>
 
