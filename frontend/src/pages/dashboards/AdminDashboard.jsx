@@ -30,7 +30,7 @@ export default function AdminDashboard() {
       {/* ===== NAVBAR ===== */}
       <div className="bg-white px-10 py-4 flex justify-between items-center shadow-sm">
         <h1 className="flex items-center gap-2 text-sm font-semibold text-green-600">
-           Lakhushiya
+           Lakhushya
         </h1>
 
         <div className="flex items-center gap-6 text-sm">
@@ -139,7 +139,6 @@ export default function AdminDashboard() {
 
             {[
               ["Priya Sharma", "NGO", "priya@example.com", "2024-01-20"],
-              ["Rajesh Kumar", "Volunteer", "rajesh@example.com", "2024-01-21"],
               ["Green Earth NGO", "NGO", "contact@greenearth.org", "2024-01-19"],
             ].map(([name, role, email, date]) => (
               <div
